@@ -1,8 +1,9 @@
 import React from 'react'
 import ReactDom from 'react-dom'
-import { BrowserRouter as Router } from 'react-router-dom'
+import { MemoryRouter as Router, Link } from 'react-router-dom'
 import { AppContainer } from 'react-hot-loader' // eslint-disable-line
 import App from './views/App'
+import Routes from './config/router'
 
 const root = document.getElementById('root')
 const render = (Component) => {
@@ -10,7 +11,15 @@ const render = (Component) => {
   renderMethod(
     <AppContainer>
       <Router>
-        <Component />
+        <div>
+          <Component />
+          <ul>
+            <li><Link to="/">首页</Link></li>
+            <li><Link to="/list">列表</Link></li>
+            <li><Link to="/detail">详情页面</Link></li>
+          </ul>
+          <Routes />
+        </div>
       </Router>
     </AppContainer>,
     root,
