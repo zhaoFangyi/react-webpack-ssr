@@ -20,6 +20,7 @@ const render = (Component) => {
               <li><Link to="/">首页</Link></li>
               <li><Link to="/list">列表</Link></li>
               <li><Link to="/detail">详情页面</Link></li>
+              <li><Link to="/test">测试</Link></li>
             </ul>
             <Routes />
           </div>
