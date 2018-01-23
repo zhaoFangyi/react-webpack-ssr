@@ -16,6 +16,7 @@
     "jsx-a11y/anchor-is-valid": [0],
     "no-console": [0],
     "no-unused-vars": "off",
-    "react/require-default-props": [0]
+    "react/require-default-props": [0],
+    "arrow-body-style": [0],
   }
 }

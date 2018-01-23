@@ -16,6 +16,15 @@ export default class TopicList extends React.Component {
       this.secondsPsssed += 1
     }, 5000)
   }
+  asyncBootstrap() {
+    console.log('zheli')
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        this.props.appState.count = 3
+        resolve(true)
+      })
+    })
+  }
   // componentWillReact(this) {
   // }
   changeName(event) {
@@ -26,7 +35,9 @@ export default class TopicList extends React.Component {
     return (
       <div>
         <input type="text" onChange={this.changeName} />
-        this is topic list{this.props.appState.msg}{this.props.appState.name}
+        this is topic list
+        <p>{this.props.appState.msg}</p>
+        {this.props.appState.name}
         <p>{this.secondsPsssed}</p>
       </div>
     )

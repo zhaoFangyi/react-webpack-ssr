@@ -15,7 +15,7 @@ module.exports = function (req, res, next) {
       msg: 'need login'
     })
   }
-  
+  // 针对GET请求的时候，使用query携带accessToken
   const query = Object.assign({}, req.query, {
     accesstoken: (needAccessToken && req.method === 'GET') ? user.accessToken : ''
   })
@@ -24,8 +24,9 @@ module.exports = function (req, res, next) {
   axios(`${baseUrl}${path}`, {
     method: req.method,
     params: query,
-    // {'accesstoken': 'xxx} ==> 'accesstoken=xxx
+    // {'accesstoken': 'xxx} ==> 'accesstoken=xxx' 形式，类似formdata
     data: querystring.stringify(Object.assign({}, req.body, {
+      // 针对POST请求，使用body携带accessToken
       accesstoken: (needAccessToken && req.method === 'POST') ? user.accessToken : ''
     })),
     headers: {

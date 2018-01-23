@@ -8,6 +8,8 @@ export default class App extends React.Component {
     // do something here
   }
   render() {
-    return []
+    return [
+      <div key="app">这里是App.js文件哈哈哈哈</div>,
+    ]
   }
 }
