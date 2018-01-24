@@ -2,45 +2,36 @@ import React from 'react'
 import axios from 'axios'
 
 /* eslint-disable */
-export default class ApiTest extends React.Component {
-  constructor() {
-    super()
-    this.getTopics = this.getTopics.bind(this)
-    this.login = this.login.bind(this)
-    this.markAll = this.markAll.bind(this)
-  }
+export default class TestApi extends React.Component {
+
   getTopics() {
     axios.get('/api/topics')
       .then(resp => {
         console.log(resp)
-      })
-      .catch(err => {
-        console.log(err)
-      })
+      }).catch(err => {
+      console.log(err)
+    })
   }
+
   login() {
     axios.post('/api/user/login', {
       accessToken: 'bb2f8849-d5f0-47e1-bf59-227d5f02872d'
+    }).then(resp => {
+      console.log(resp)
+    }).catch(err => {
+      console.log(err)
     })
-      .then(resp => {
-        console.log(resp)
-      })
-      .catch(err => {
-        console.log(err)
-      })
   }
+
   markAll() {
     axios.post('/api/message/mark_all?needAccessToken=true')
       .then(resp => {
         console.log(resp)
-      })
-      .catch(err => {
-        console.log(err)
-      })
+      }).catch(err => {
+      console.log(err)
+    })
   }
-  componentDidMount() {
-    // do something here
-  }
+
   render() {
     return (
       <div>

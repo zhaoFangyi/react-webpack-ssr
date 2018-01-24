@@ -3,22 +3,21 @@ const axios = require('axios')
 
 const baseUrl = 'https://cnodejs.org/api/v1'
 
-router.post('/login', (req, res, next) => {
-  console.log(req.body)
+router.post('/login', function (req, res, next) {
   axios.post(`${baseUrl}/accesstoken`, {
-    accessToken: req.body.accessToken
+    accesstoken: req.body.accessToken
   })
-    .then(resq => {
-      if (resq.status === 200 && resq.data.success) {
-        resq.session.user = {
+    .then(resp => {
+      if (resp.status === 200 && resp.data.success) {
+        req.session.user = {
           accessToken: req.body.accessToken,
-          loginName: resq.data.loginname,
-          id: resq.data.id,
-          avatarUrl: resq.data.avatar_url
+          loginName: resp.data.loginname,
+          id: resp.data.id,
+          avatarUrl: resp.data.avatar_url
         }
         res.json({
-          success: true,
-          data: resq.data
+          sucess: true,
+          data: resp.data
         })
       }
     })
