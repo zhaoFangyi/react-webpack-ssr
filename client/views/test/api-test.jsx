@@ -20,7 +20,7 @@ export default class ApiTest extends React.Component {
   }
   login() {
     axios.post('/api/user/login', {
-      accessToken: 'ef35af2e-95b4-4062-badc-419d3b'
+      accessToken: 'bb2f8849-d5f0-47e1-bf59-227d5f02872d'
     })
       .then(resp => {
         console.log(resp)

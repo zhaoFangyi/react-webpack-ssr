@@ -3,11 +3,8 @@ const webpack = require('webpack')
 const path = require('path')
 const MemoryFs = require('memory-fs')
 const proxy = require('http-proxy-middleware')
-const ejs = require('ejs')
-const serialize = require('serialize-javascript')
-const asyncBootstrap = require('react-async-bootstrapper').default
-const ReactDomServer = require('react-dom/server')
 
+const serverRender = require('./server-render')
 const serverConfig = require('../../build/webpack.config.server')
 
 const getTemplate = () => {
@@ -21,12 +18,28 @@ const getTemplate = () => {
       })
   })
 }
-const Module = module.constructor
+
+const NativeModule = require('module')
+const vm = require('vm')
+
+// `(function(exports, require, module, __finename, __dirname){ ...bundle code })`
+const getModuleFromString = (bundle, filename) => {
+  const m = { exports: {} }
+  const wrapper = NativeModule.wrap(bundle)
+  const script = new vm.Script(wrapper, {
+    filename: filename,
+    displayErrors: true,
+  })
+  const result = script.runInThisContext()
+  result.call(m.exports, m.exports, require, m)
+  return m
+}
+
 const mfs = new MemoryFs
 const serverCompiler = webpack(serverConfig)
 
 serverCompiler.outputFileSystem = mfs
-let serverBundle, createStoreMap
+let serverBundle
 serverCompiler.watch({}, (err, stats) => {
   if (err) throw err
   stats = stats.toJson()
@@ -38,49 +51,20 @@ serverCompiler.watch({}, (err, stats) => {
     serverConfig.output.filename
   );
   const bundle = mfs.readFileSync(bundlePath, 'utf-8')
-  const m = new Module()
-  m._compile(bundle, 'server-entry.js')
-  serverBundle = m.exports.default
-  createStoreMap = m.exports.createStoreMap
+  const m = getModuleFromString(bundle, 'server-entry.js')
+  serverBundle = m.exports
 })
 
-const getStoreState = (stores) => {
-  return Object.keys(stores).reduce((result, storeName) => {
-    result[storeName] = stores[storeName].toJson()
-    return result
-  }, {})
-}
 module.exports = function (app) {
   app.use('/public', proxy({
     target: 'http://localhost:8888'
   }))
-  app.get('*', function (req, res) {
+  app.get('*', function (req, res, next) {
+    if (!serverBundle) {
+      return res.send('waiting for compile, refresh later')
+    }
     getTemplate().then(template => {
-      const routerContext = {}
-      const stores = createStoreMap()
-      const app = serverBundle(stores, routerContext, req.url)
-      asyncBootstrap(app).then(() => {
-        // 处理路由重定向
-        if (routerContext.url) {
-          console.log(routerContext)
-          res.status(302).setHeader('Location', routerContext.url)
-          res.end()
-          return
-        }
-        console.log(stores.appState.count)
-        const state = getStoreState(stores)
-        const content = ReactDomServer.renderToString(app)
-        const html = ejs.render(template, {
-          appString: content,
-          initialState: serialize(state),
-          // meta: helmet.meta.toString(),
-          // title: helmet.title.toString(),
-          // style: helmet.style.toString(),
-          // link: helmet.link.toString(),
-          // materialCss: sheetsRegistry.toString()
-        })
-        res.send(html)
-      })
-    })
+      return serverRender(serverBundle, template, req, res)
+    }).catch(next)
   })
 }

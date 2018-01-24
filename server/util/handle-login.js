@@ -4,7 +4,10 @@ const axios = require('axios')
 const baseUrl = 'https://cnodejs.org/api/v1'
 
 router.post('/login', (req, res, next) => {
-  axios.post(`${baseUrl}/accesstoken`)
+  console.log(req.body)
+  axios.post(`${baseUrl}/accesstoken`, {
+    accessToken: req.body.accessToken
+  })
     .then(resq => {
       if (resq.status === 200 && resq.data.success) {
         resq.session.user = {

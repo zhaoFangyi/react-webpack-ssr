@@ -2,6 +2,8 @@ import React from 'react'
 import { inject, observer } from 'mobx-react'
 import { observable } from 'mobx'
 import PropTypes from 'prop-types'
+import Button from 'material-ui/Button'
+import Helmet from 'react-helmet'
 import { AppState } from '../../store/app-state'
 
 @inject('appState') @observer // inject 注入需要的store
@@ -34,6 +36,11 @@ export default class TopicList extends React.Component {
   render() {
     return (
       <div>
+        <Helmet>
+          <title>This is topic list</title>
+          <meta name="description" content="This is description" />
+        </Helmet>
+        <Button raised color="primary">This is button</Button>
         <input type="text" onChange={this.changeName} />
         this is topic list
         <p>{this.props.appState.msg}</p>

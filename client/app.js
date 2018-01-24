@@ -1,42 +1,67 @@
 import React from 'react'
-import ReactDom from 'react-dom'
-import { BrowserRouter as Router, Link } from 'react-router-dom'
+import ReactDOM from 'react-dom'
+import { BrowserRouter } from 'react-router-dom'
+
 import { AppContainer } from 'react-hot-loader' // eslint-disable-line
 import { Provider } from 'mobx-react'
+
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
+import { lightBlue, pink } from 'material-ui/colors'
+
 import App from './views/App'
-import Routes from './config/router'
 import AppState from './store/app-state'
+
+const theme = createMuiTheme({
+  palette: {
+    primary: pink,
+    accent: lightBlue,
+    type: 'light',
+  },
+})
+
+// ReactDOM.hydrate(<App />, document.getElementById('root'))
 
 const initialState = window.__INITIAL__STATE__ || {} // eslint-disable-line
 
+const createApp = (TheApp) => {
+  class Main extends React.Component {
+    // Remove the server-side injected CSS.
+    componentDidMount() {
+      const jssStyles = document.getElementById('jss-server-side');
+      if (jssStyles && jssStyles.parentNode) {
+        jssStyles.parentNode.removeChild(jssStyles);
+      }
+    }
+
+    render() {
+      return <TheApp />
+    }
+  }
+  return Main
+}
+
 const root = document.getElementById('root')
 const render = (Component) => {
-  // const renderMethod = module.hot ? ReactDom.render : ReactDom.hydrate
-  ReactDom.render(
+  ReactDOM.hydrate(
     <AppContainer>
       <Provider appState={new AppState(initialState.appState)}>
-        <Router>
-          <div>
+        <BrowserRouter>
+          <MuiThemeProvider theme={theme}>
             <Component />
-            <ul>
-              <li><Link to="/">首页</Link></li>
-              <li><Link to="/list">列表</Link></li>
-              <li><Link to="/detail">详情页面</Link></li>
-              <li><Link to="/test">测试</Link></li>
-            </ul>
-            <Routes />
-          </div>
-        </Router>
+          </MuiThemeProvider>
+        </BrowserRouter>
       </Provider>
     </AppContainer>,
     root,
   )
-};
-render(App)
+}
+
+render(createApp(App))
 
 if (module.hot) {
   module.hot.accept('./views/App', () => {
-    const NextApp = require('./views/App').default; // eslint-disable-line
-    render(NextApp)
+    const NextApp = require('./views/App').default // eslint-disable-line
+    // ReactDOM.hydrate(<NextApp />, document.getElementById('root'))
+    render(createApp(NextApp))
   })
 }
