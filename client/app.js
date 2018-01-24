@@ -1,9 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
-
-import { AppContainer } from 'react-hot-loader' // eslint-disable-line
 import { Provider } from 'mobx-react'
+import { AppContainer } from 'react-hot-loader' // eslint-disable-line
 
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 import { lightBlue, pink } from 'material-ui/colors'
@@ -27,9 +26,9 @@ const createApp = (TheApp) => {
   class Main extends React.Component {
     // Remove the server-side injected CSS.
     componentDidMount() {
-      const jssStyles = document.getElementById('jss-server-side');
+      const jssStyles = document.getElementById('jss-server-side')
       if (jssStyles && jssStyles.parentNode) {
-        jssStyles.parentNode.removeChild(jssStyles);
+        jssStyles.parentNode.removeChild(jssStyles)
       }
     }
 
