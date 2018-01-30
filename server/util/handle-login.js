@@ -16,7 +16,7 @@ router.post('/login', function (req, res, next) {
           avatarUrl: resp.data.avatar_url
         }
         res.json({
-          sucess: true,
+          success: true,
           data: resp.data
         })
       }

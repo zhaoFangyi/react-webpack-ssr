@@ -1,30 +1,74 @@
 import {
   observable,
-  computed,
   action,
 } from 'mobx'
 
+import { post, get } from '../util/http'
+
 export default class AppState {
-  constructor({ count, name } = { count: 0, name: 'ZhaoFangYi' }) {
-    this.count = count
-    this.name = name
+  @observable user = {
+    isLogin: false,
+    info: {},
+    detail: {
+      recentTopics: [],
+      recentReplies: [],
+      syncing: false,
+    },
+    collections: {
+      syncing: false,
+      list: [],
+    },
   }
-  @observable count
-  @observable name
-  @computed get msg() {
-    return `${this.name} say count is ${this.count}`
+  @action login(accessToken) {
+    return new Promise((resolve, reject) => {
+      post('/user/login', {}, {
+        accessToken,
+      }).then((resp) => {
+        if (resp.success) {
+          this.user.isLogin = true
+          this.user.info = resp.data
+          resolve()
+        } else {
+          reject(resp)
+        }
+      }).catch(reject)
+    })
   }
-  @action add() {
-    this.count += 1
+  @action getUserDetail() {
+    return new Promise((resolve, reject) => {
+      get(`/user/${this.user.info.loginname}`)
+        .then((resp) => {
+          if (resp.success) {
+            this.user.detail.recentReplies = resp.data.recent_replies
+            this.user.detail.recentTopics = resp.data.recent_topics
+            resolve()
+          } else {
+            reject()
+          }
+          this.user.detail.syncing = false
+        })
+        .catch((err) => {
+          this.user.detail.syncing = false
+          reject(err)
+        })
+    })
   }
-  @action changeName(value) {
-    this.name = value
-  }
-  // 服务端渲染之后的数据使用json格式拿到
-  toJson() {
-    return {
-      count: this.count,
-      name: this.name,
-    }
+  @action getUserCollection() {
+    return new Promise((resolve, reject) => {
+      get(`/topic_collect/${this.user.info.loginname}`)
+        .then((resp) => {
+          if (resp.success) {
+            this.user.collections.list = resp.data
+            resolve()
+          } else {
+            reject()
+          }
+          this.user.collections.syncing = false
+        })
+        .catch((err) => {
+          this.user.collections.syncing = false
+          reject(err)
+        })
+    })
   }
 }

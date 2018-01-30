@@ -1,4 +1,5 @@
 const path = require('path')
+const webpack = require('webpack')
 const baseConfig = require('./webpack.base')
 const webpackMerge = require('webpack-merge')
 
@@ -12,5 +13,10 @@ module.exports = webpackMerge(baseConfig, {
   output: {
     filename: 'server-entry.js',
     libraryTarget: 'commonjs2'
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.API_BASE': '"http://127.0.0.1:3000"',
+    })
+  ],
 })
