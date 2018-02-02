@@ -10,6 +10,10 @@ import { lightBlue, pink } from 'material-ui/colors'
 import App from './views/App'
 import { AppState, TopicStore } from './store/store'
 
+// ReactDOM.hydrate(<App />, document.getElementById('root'))
+
+const initalState = window.__INITIAL_STATE__ || {} // eslint-disable-line
+
 const theme = createMuiTheme({
   palette: {
     primary: pink,
@@ -17,10 +21,6 @@ const theme = createMuiTheme({
     type: 'light',
   },
 })
-
-// ReactDOM.hydrate(<App />, document.getElementById('root'))
-
-const initialState = window.__INITIAL__STATE__ || {} // eslint-disable-line
 
 const createApp = (TheApp) => {
   class Main extends React.Component {
@@ -38,13 +38,18 @@ const createApp = (TheApp) => {
   }
   return Main
 }
-
-const appState = new AppState(initialState.appState)
-const topicStore = new TopicStore(initialState.topicStore)
+const appState = new AppState()
+try {
+  appState.init(initalState.appState)
+} catch (err) {
+  console.log(err)
+}
+// const appState = new AppState(initalState.appState)
+const topicStore = new TopicStore(initalState.topicStore)
 
 const root = document.getElementById('root')
 const render = (Component) => {
-  ReactDOM.hydrate(
+  ReactDOM.render(
     <AppContainer>
       <Provider appState={appState} topicStore={topicStore}>
         <BrowserRouter>

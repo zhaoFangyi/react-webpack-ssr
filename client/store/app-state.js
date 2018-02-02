@@ -1,6 +1,7 @@
 import {
   observable,
   action,
+  toJS,
 } from 'mobx'
 
 import { post, get } from '../util/http'
@@ -19,6 +20,12 @@ export default class AppState {
       list: [],
     },
   }
+  init({ user }) {
+    console.log(arguments) // eslint-disable-line
+    if (user) {
+      this.user = user
+    }
+  }
   @action login(accessToken) {
     return new Promise((resolve, reject) => {
       post('/user/login', {}, {
@@ -27,6 +34,8 @@ export default class AppState {
         if (resp.success) {
           this.user.isLogin = true
           this.user.info = resp.data
+          console.log('登录成功')
+          console.log(this.user.info)
           resolve()
         } else {
           reject(resp)
@@ -35,7 +44,11 @@ export default class AppState {
     })
   }
   @action getUserDetail() {
+    this.user.detail.syncing = true
     return new Promise((resolve, reject) => {
+      console.log(this.user)
+      console.log(this.user.info) // info
+      console.log(this.user.collections)
       get(`/user/${this.user.info.loginname}`)
         .then((resp) => {
           if (resp.success) {
@@ -54,6 +67,7 @@ export default class AppState {
     })
   }
   @action getUserCollection() {
+    this.user.collections.syncing = true
     return new Promise((resolve, reject) => {
       get(`/topic_collect/${this.user.info.loginname}`)
         .then((resp) => {
@@ -70,5 +84,10 @@ export default class AppState {
           reject(err)
         })
     })
+  }
+  toJson() {
+    return {
+      user: toJS(this.user),
+    }
   }
 }

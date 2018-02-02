@@ -9,9 +9,10 @@
   <%%- meta %>
 
   <%%- title %>
-
-  <%%- link %>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+  <link href="https://cdn.bootcss.com/normalize/7.0.0/normalize.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.bootcss.com/simplemde/1.11.2/simplemde.min.css">
+   <%%- link %>
 
   <%%- style %>
 
@@ -23,7 +24,7 @@
 <body>
 <div id="root"><%%- appString %></div>
 <script>
-  window.__INITIAL__STATE__ = <%%- initialState%>
+  window.__INITIAL_STATE__ = <%%- initalState %>
 </script>
 </body>
 </html>

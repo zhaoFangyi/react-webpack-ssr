@@ -1,5 +1,5 @@
 import React from 'react'
-import SimpleMDE from 'react-simplemde-editor'
+// import SimpleMDE from 'react-simplemde-editor'
 import PropTypes from 'prop-types'
 
 import {
@@ -14,6 +14,7 @@ import Button from 'material-ui/Button'
 import Snackbar from 'material-ui/Snackbar'
 import IconReply from 'material-ui-icons/Reply'
 
+import SimpleMDE from '../../components/simple-mde'
 import Container from '../layout/container'
 import { TopicStore } from '../../store/store'
 import createStyles from './styles'
@@ -123,7 +124,7 @@ class TopicCreate extends React.Component {
             value={this.state.content}
             options={{
               toolbar: false,
-              spellCheck: false,
+              spellChecker: false,
               placeholder: '发表你的精彩评论',
             }}
           />

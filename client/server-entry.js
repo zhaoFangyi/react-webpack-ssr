@@ -1,5 +1,5 @@
 import React from 'react'
-import { StaticRouter } from 'react-router'
+import { StaticRouter } from 'react-router-dom'
 import { Provider, useStaticRendering } from 'mobx-react'
 
 import { JssProvider } from 'react-jss'
@@ -17,8 +17,8 @@ useStaticRendering(true)
 export default (stores, routerContext, sheetsRegistry, jss, theme, url) => (
   <Provider {...stores}>
     <StaticRouter context={routerContext} location={url}>
-      <JssProvider registry={sheetsRegistry} jss={jss}>
-        <MuiThemeProvider theme={theme}>
+      <JssProvider registry={sheetsRegistry} Jss={jss}>
+        <MuiThemeProvider theme={theme} sheetsManager={new Map()}>
           <App />
         </MuiThemeProvider>
       </JssProvider>

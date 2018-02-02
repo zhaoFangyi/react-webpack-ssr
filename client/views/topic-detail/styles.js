@@ -12,7 +12,7 @@ export const topicDetailStyle = (theme) => {
       '& img': {
         maxWidth: '100%',
       },
-      '& ul, &ol': {
+      '& ul, & ol': {
         paddingLeft: 30,
         '& li': {
           marginBottom: 7,

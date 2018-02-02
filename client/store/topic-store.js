@@ -50,16 +50,18 @@ class TopicStore {
   @observable details
   @observable syncing
   @observable createdTopics = []
+  @observable tab
 
-  constructor({ syncing = false, topics = [], details = [] } = {}) {
+  constructor({ syncing = false, topics = [], tab = null, details = [] } = {}) {
     this.syncing = syncing
     this.topics = topics.map(topic => new Topic(createTopic(topic)))
     this.details = details.map(topic => new Topic(createTopic(topic)))
+    this.tab = tab
   }
 
-  addTopic(topic) {
-    this.topics.push(new Topic(createTopic(topic)))
-  }
+  // addTopic(topic) {
+  //   this.topics.push(new Topic(createTopic(topic)))
+  // }
   @computed get detailMap() {
     return this.details.reduce((result, detail) => {
       result[detail.id] = detail
@@ -69,28 +71,33 @@ class TopicStore {
 
   @action fetchTopics(tab) {
     return new Promise((resolve, reject) => {
-      this.syncing = true
-      this.topics = []
-      get('/topics', {
-        mdrender: false,
-        tab,
-      }).then((resp) => {
-        if (resp.success) {
-          this.topics = resp.data.map((topic) => {
-            return new Topic(createTopic(topic))
-          })
-          // resp.data.forEach((topic) => {
-          //   this.addTopic(topic)
-          // })
-          resolve()
-        } else {
-          reject()
-        }
-        this.syncing = false
-      }).catch((err) => {
-        this.syncing = false
-        reject(err)
-      })
+      if (tab === this.tab && this.topics.length > 0) {
+        resolve()
+      } else {
+        this.tab = tab
+        this.syncing = true
+        this.topics = []
+        get('/topics', {
+          mdrender: false,
+          tab,
+        }).then((resp) => {
+          if (resp.success) {
+            this.topics = resp.data.map((topic) => {
+              return new Topic(createTopic(topic))
+            })
+            // resp.data.forEach((topic) => {
+            //   this.addTopic(topic)
+            // })
+            resolve()
+          } else {
+            reject()
+          }
+          this.syncing = false
+        }).catch((err) => {
+          this.syncing = false
+          reject(err)
+        })
+      }
     })
   }
   @action fetchTopicDetail(id) {
@@ -138,6 +145,14 @@ class TopicStore {
           reject(err)
         })
     })
+  }
+  toJson() {
+    return {
+      topics: toJS(this.topics),
+      syncing: this.syncing,
+      details: toJS(this.details),
+      tab: this.tab,
+    }
   }
 }
 

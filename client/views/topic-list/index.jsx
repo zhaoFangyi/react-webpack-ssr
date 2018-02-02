@@ -1,14 +1,15 @@
 import React from 'react'
+import Helmet from 'react-helmet'
+
 import {
   inject,
   observer,
 } from 'mobx-react'
 import PropTypes from 'prop-types'
-import Helmet from 'react-helmet'
 import queryString from 'query-string'
 
-import Tabs, { Tab } from 'material-ui/Tabs'
 import List from 'material-ui/List'
+import Tabs, { Tab } from 'material-ui/Tabs'
 import { CircularProgress } from 'material-ui/Progress'
 
 import { AppState, TopicStore } from '../../store/store'
@@ -49,11 +50,12 @@ export default class TopicList extends React.Component {
     this.context.router.history.push(`/detail/${topic.id}`)
   }
   asyncBootstrap() {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        this.props.appState.count = 3
-        resolve(true)
-      })
+    const query = queryString.parse(this.props.location.search)
+    const { tab } = query
+    return this.props.topicStore.fetchTopics(tab || 'all').then(() => {
+      return true
+    }).catch(() => {
+      return false
     })
   }
   getTab(search) {
@@ -95,23 +97,24 @@ export default class TopicList extends React.Component {
           }
         </Tabs>
         {
-          (createdTopics && createdTopics.length > 0) &&
-          <List style={{ backgroundColor: '#dfdfdf' }}>
-            {
-              createdTopics.map((t) => {
-                t = Object.assign({}, t, {
-                  author: user.info,
+          (createdTopics && createdTopics.length > 0) ?
+            <List style={{ backgroundColor: '#dfdfdf' }}>
+              {
+                createdTopics.map((t) => {
+                  t = Object.assign({}, t, {
+                    author: user.info,
+                  })
+                  return (
+                    <TopicListItem
+                      key={t.id}
+                      topic={t}
+                      onClick={() => this.ListItemClick(t)}
+                    />
+                  )
                 })
-                return (
-                  <TopicListItem
-                    key={t.id}
-                    topic={t}
-                    onClick={() => this.ListItemClick(t)}
-                  />
-                )
-              })
-            }
-          </List>
+              }
+            </List> :
+            null
         }
         <List>
           {

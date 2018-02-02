@@ -15,7 +15,9 @@ import Button from 'material-ui/Button'
 
 import IconReply from 'material-ui-icons/Reply'
 
-import SimpleMDE from 'react-simplemde-editor'
+// import SimpleMDE from 'react-simplemde-editor'
+
+import SimpleMDE from '../../components/simple-mde'
 
 import Container from '../layout/container'
 import { TopicStore } from '../../store/store'
@@ -44,7 +46,7 @@ class TopicDetail extends React.Component {
     }
     this.getTopicId = this.getTopicId.bind(this)
     this.handleNewReplyChange = this.handleNewReplyChange.bind(this)
-    this.goToLgin = this.goToLgin.bind(this)
+    this.goToLogin = this.goToLogin.bind(this)
     this.doReply = this.doReply.bind(this)
   }
   componentDidMount() {
@@ -55,12 +57,22 @@ class TopicDetail extends React.Component {
   getTopicId() {
     return this.props.match.params.id
   }
+  asyncBootstrap() {
+    console.log('topic detail invoked') // eslint-disable-line
+    const id = this.props.match.params.id
+    return this.props.topicStore.getTopicDetail(id).then(() => {
+      return true
+    }).catch((err) => {
+      throw err
+    })
+  }
+
   handleNewReplyChange(value) {
     this.setState({
       newReply: value,
     })
   }
-  goToLgin() {
+  goToLogin() {
     this.context.router.history.replace('/user/login')
   }
   doReply() {
@@ -143,7 +155,7 @@ class TopicDetail extends React.Component {
                   options={{
                     toolbar: false,
                     autoFocus: false,
-                    spellCheck: false,
+                    spellChecker: false,
                     placeholder: '请加您的精彩回复',
                   }}
                 />
@@ -161,7 +173,7 @@ class TopicDetail extends React.Component {
           {
             !user.isLogin ?
               <section className={classes.notLoginButton}>
-                <Button raised color="primary" onClick={this.goToLgin}>登录并进行回复</Button>
+                <Button raised color="primary" onClick={this.goToLogin}>登录并进行回复</Button>
               </section> : null
           }
           <section>

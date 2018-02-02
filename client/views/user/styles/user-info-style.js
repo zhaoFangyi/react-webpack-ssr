@@ -16,7 +16,7 @@ export default (theme) => {
       backgroundColor: theme.palette.primary[700],
       color: '#fff',
     },
-    '@media screen adn (max-width: 480px)': {
+    '@media screen and (max-width: 480px)': {
       root: {
         padding: 10,
         minHeight: 300,

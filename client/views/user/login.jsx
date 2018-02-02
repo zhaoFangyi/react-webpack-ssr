@@ -34,32 +34,33 @@ class UserLogin extends React.Component {
       accesstoken: '',
       helpText: '',
     }
-    this.handleInput = this.handleInput.bind(this)
     this.handleLogin = this.handleLogin.bind(this)
+    this.handleInput = this.handleInput.bind(this)
   }
   getFrom(location) {
     location = location || this.props.location
     const query = queryString.parse(location.search)
     return query.from || '/user/info'
   }
-  handleInput(event) {
-    this.setState({
-      accesstoken: event.target.value.trim(),
-    })
-  }
   handleLogin() {
-    if (!this.state.accesstoken) {
+    const ctx = this
+    if (!ctx.state.accesstoken) {
       return this.setState({
         helpText: '必须填写',
       })
     }
-    this.setState({
+    ctx.setState({
       helpText: '',
     })
     return this.props.appState.login(this.state.accesstoken)
       .catch((err) => {
         console.log(err)
       })
+  }
+  handleInput(event) {
+    this.setState({
+      accesstoken: event.target.value.trim(),
+    })
   }
   render() {
     const { classes } = this.props
